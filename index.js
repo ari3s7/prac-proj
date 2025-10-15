@@ -1,10 +1,11 @@
 const express = require("express");
 const app = express();
 require("dotenv").config()
-const { userRouter } = require("./routes/user")
-const { courseRouter } = require("./routes/course")
-const { adminRouter } = require("./routes/admin")
+const { userRouter } = require("./routes/user");
+const { courseRouter } = require("./routes/course");
+const { adminRouter } = require("./routes/admin");
 
+app.use(express.json());
 
 const PORT = 3000;
 
