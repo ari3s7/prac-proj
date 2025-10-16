@@ -10,39 +10,65 @@ const adminRouter = Router();
 
 
 
-adminRouter.post("/signup", async (req,res) => {
-    const {
-      email,
-      password,
-      firstName,
-      lastName,
-    } = req.body
+adminRouter.post("/signup", async (req,res) =>  {
+        const userValid = z.object({
+        email: z.string(),
+        password: z.string().min(3).max(10),
+        firstName: z.string().min(2).max(10),
+        lastName: z.string().min(2).max(10)
+    }) 
 
-     const hashedPassword = await bcrypt.hash(password, 5);
-    
-    await adminModel.create ({
+    const parsedData = userValid.safeParse(req.body);
+
+    if(!parsedData.success) {
+        res.json({
+            message: "not correct format"
+        }) 
+        return
+    } 
+
+    const {
+        email,
+        password,
+        firstName,
+        lastName
+    } = req.body;
+
+    const hashedPassword = await bcrypt.hash(password, 5);
+
+    try {
+      await userModel.create ({
         email: email,
         password: hashedPassword,
         firstName: firstName,
         lastName: lastName
-    })
+      });
 
+      res.status(200).json({
+        message: "successfully created the admin"
+      })
+    }
+    catch (err) {
+      console.error("error creating user", err);
 
-    res.json({
-        message: "signup successful"
-    })
+      res.status(500).json ({
+        message: "something went wrong"
+      })
+    }
 })
 
 adminRouter.post("/signin", async (req,res) => {
     const {email, password} = req.body;
 
 
-
+    
     const admin = await adminModel.findOne ({
         email: email
     });
 
-    if(admin) {
+    const passMatch = await bcrypt.compare(password, user.password)
+
+    if(passMatch) {
        const token = jwt.sign({
         id: admin._id
     }, JWT_ADMIN_PASSWORD);
