@@ -87,6 +87,29 @@ userRouter.post("/signin", async (req,res) => {
     }
 })
 
+userRouter.get("/purchases", userMiddleware, async (req, res) => {
+    const userId = req.userId;
+
+    const purchases = await purchaseModel.find({
+        userId,
+    });
+
+    let purchaseCourseIds = [];
+
+    for (let i = 0; i< purchases.length; i++) {
+        purchaseCourseIds.push(purchases[i].courseId)
+    }
+
+    const coursesData = await courseModel.find({
+        _id: { $in: purchasedCourseIds}
+    })
+
+    res.json({
+        purchases,
+        coursesData
+    })
+})
+
 module.exports = {
     userRouter: userRouter
 };
