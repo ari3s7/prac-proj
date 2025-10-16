@@ -4,6 +4,7 @@ const { bcrypt } = require("bcrypt");
 const { jwt } = require("jsonwebtoken");
 const { JWT_ADMIN_PASSWORD } = require("../config");
 const { adminMiddleware } = require("../middleware/admin");
+const { z } = require("zod");
 
 app.use(express.json());
 const adminRouter = Router();
@@ -61,7 +62,7 @@ adminRouter.post("/signin", async (req,res) => {
     const {email, password} = req.body;
 
 
-    
+
     const admin = await adminModel.findOne ({
         email: email
     });
